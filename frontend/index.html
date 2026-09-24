@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Face-Off — Compare Two Stocks (with dividends)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Stock Face-Off</h1>
+    <p class="tagline">Compare two stocks head to head — including dividends.</p>
+  </header>
+
+  <main class="layout">
+    <section class="controls">
+      <div class="ticker-picker">
+        <label for="tickerA">Stock A</label>
+        <input id="tickerA" list="companies" placeholder="e.g. AAPL or Apple" autocomplete="off" />
+      </div>
+
+      <div class="vs">vs</div>
+
+      <div class="ticker-picker">
+        <label for="tickerB">Stock B</label>
+        <input id="tickerB" list="companies" placeholder="e.g. MSFT or Microsoft" autocomplete="off" />
+      </div>
+
+      <datalist id="companies"></datalist>
+
+      <div class="options">
+        <div class="field">
+          <label for="mode">Compare by</label>
+          <select id="mode">
+            <option value="total_return" selected>Total return (with dividends)</option>
+            <option value="price">Price only</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="range">Time range</label>
+          <select id="range">
+            <option value="1">1 year</option>
+            <option value="3">3 years</option>
+            <option value="5" selected>5 years</option>
+            <option value="10">10 years</option>
+            <option value="0">Max</option>
+          </select>
+        </div>
+
+        <button id="compareBtn">Compare</button>
+      </div>
+    </section>
+
+    <section class="chart-wrap">
+      <div id="status" class="status"></div>
+      <canvas id="chart"></canvas>
+      <p class="note" id="modeNote"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Data via yfinance (Yahoo Finance). For fun / educational use — not investment advice.</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
