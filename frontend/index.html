@@ -41,11 +41,15 @@
         <div class="field">
           <label for="range">Time range</label>
           <select id="range">
-            <option value="1">1 year</option>
-            <option value="3">3 years</option>
-            <option value="5" selected>5 years</option>
-            <option value="10">10 years</option>
-            <option value="0">Max</option>
+            <option value="1m">1 month</option>
+            <option value="3m">3 months</option>
+            <option value="6m">6 months</option>
+            <option value="ytd">Year to date</option>
+            <option value="1y">1 year</option>
+            <option value="3y">3 years</option>
+            <option value="5y" selected>5 years</option>
+            <option value="10y">10 years</option>
+            <option value="max">Max</option>
           </select>
         </div>
 
@@ -64,6 +68,6 @@
     <span>Data via yfinance (Yahoo Finance). For fun / educational use — not investment advice.</span>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

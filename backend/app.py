@@ -16,6 +16,7 @@ See README for details.
 
 from __future__ import annotations
 
+import math
 import time
 from datetime import datetime
 
@@ -67,6 +68,10 @@ def fetch_history(ticker: str) -> list[dict]:
         try:
             close_f = float(close)
         except (TypeError, ValueError):
+            continue
+        # Skip NaN/Infinity: yfinance sometimes has gaps, and those values are
+        # NOT valid JSON. Strict parsers (Safari's) reject the whole response.
+        if not math.isfinite(close_f):
             continue
         rows.append({"date": ts.strftime("%Y-%m-%d"), "close": close_f})
 

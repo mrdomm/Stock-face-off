@@ -59,11 +59,40 @@ function normalizeTicker(raw) {
   return value;
 }
 
-function startDateForRange(years) {
-  if (!years || years === "0") return "";
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - Number(years));
-  return d.toISOString().slice(0, 10);
+// Translate a range code (e.g. "1m", "6m", "ytd", "5y", "max") into an ISO
+// start date (YYYY-MM-DD). Returns "" for "max" so the backend sends full
+// history. We build the date from numeric parts and format it by hand, which
+// is reliable across browsers (Safari is strict about date parsing).
+function formatDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function startDateForRange(code) {
+  if (!code || code === "max") return "";
+
+  const now = new Date();
+
+  if (code === "ytd") {
+    // First day of the current year.
+    return `${now.getFullYear()}-01-01`;
+  }
+
+  const match = /^(\d+)([my])$/.exec(code);
+  if (!match) return "";
+  const amount = Number(match[1]);
+  const unit = match[2];
+
+  // Build a fresh date from parts, then shift it.
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (unit === "m") {
+    d.setMonth(d.getMonth() - amount);
+  } else {
+    d.setFullYear(d.getFullYear() - amount);
+  }
+  return formatDate(d);
 }
 
 function setStatus(msg, isError = false) {
@@ -83,11 +112,16 @@ async function compare() {
   const mode = els.mode.value;
   const start = startDateForRange(els.range.value);
 
-  const url = new URL(`${API_BASE}/api/compare`);
-  url.searchParams.set("a", a);
-  url.searchParams.set("b", b);
-  url.searchParams.set("mode", mode);
-  if (start) url.searchParams.set("start", start);
+  // Build the query string by hand and pass a plain string to fetch().
+  // (Some Safari versions reject a URL object and throw
+  // "The string did not match the expected pattern.")
+  const params = [
+    `a=${encodeURIComponent(a)}`,
+    `b=${encodeURIComponent(b)}`,
+    `mode=${encodeURIComponent(mode)}`,
+  ];
+  if (start) params.push(`start=${encodeURIComponent(start)}`);
+  const url = `${API_BASE}/api/compare?${params.join("&")}`;
 
   els.btn.disabled = true;
   setStatus(`Loading ${a} vs ${b}…`);
@@ -100,7 +134,7 @@ async function compare() {
     setStatus(`${data.series.a.ticker} vs ${data.series.b.ticker}`);
     els.modeNote.textContent =
       mode === "total_return"
-        ? "Total return: each line shows the growth of a $100 investment, including reinvested dividends. Both start at 100 so you can compare returns directly."
+        ? "Total return: each line shows the percent gain/loss since the start of the selected range, including reinvested dividends. Both start at 0% so you can compare returns on equal footing."
         : "Price only: raw closing price in dollars (ignores dividends).";
   } catch (err) {
     setStatus(err.message, true);
@@ -158,9 +192,14 @@ function render(data) {
             label: (c) => {
               const v = c.parsed.y;
               if (v === null) return `${c.dataset.label}: n/a`;
-              return isReturn
-                ? `${c.dataset.label}: $${v.toFixed(2)} (of $100)`
-                : `${c.dataset.label}: $${v.toFixed(2)}`;
+              if (isReturn) {
+                // In total-return mode both series start at 100, so
+                // (value - 100) is the percent return since the start.
+                const pct = v - 100;
+                const sign = pct >= 0 ? "+" : "";
+                return `${c.dataset.label}: ${sign}${pct.toFixed(2)}%`;
+              }
+              return `${c.dataset.label}: $${v.toFixed(2)}`;
             },
           },
         },
@@ -173,7 +212,14 @@ function render(data) {
         y: {
           ticks: {
             color: "#9aa3c0",
-            callback: (v) => (isReturn ? `$${v}` : `$${v}`),
+            callback: (v) => {
+              if (isReturn) {
+                const pct = v - 100;
+                const sign = pct > 0 ? "+" : "";
+                return `${sign}${pct}%`;
+              }
+              return `$${v}`;
+            },
           },
           grid: { color: "rgba(255,255,255,0.05)" },
         },
