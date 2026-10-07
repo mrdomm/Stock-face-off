@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dividend Impact — Price vs Total Return</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav">
+      <a href="index.html">Compare</a>
+      <a href="dividend.html" class="active">Dividend Impact</a>
+      <a href="inflation.html">Beat Inflation?</a>
+    </nav>
+    <h1>Dividend Impact</h1>
+    <p class="tagline">One stock, two lines: share price alone vs. price plus dividends.</p>
+  </header>
+
+  <main class="layout">
+    <section class="controls">
+      <div class="ticker-picker">
+        <label for="ticker">Stock / ETF</label>
+        <input id="ticker" list="companies" placeholder="e.g. SRU-UN.TO" autocomplete="off" />
+      </div>
+
+      <datalist id="companies"></datalist>
+
+      <div class="options">
+        <div class="field">
+          <label for="range">Time range</label>
+          <select id="range">
+            <option value="1y">1 year</option>
+            <option value="3y">3 years</option>
+            <option value="5y" selected>5 years</option>
+            <option value="10y">10 years</option>
+            <option value="max">Max</option>
+          </select>
+        </div>
+
+        <button id="goBtn">Show</button>
+      </div>
+    </section>
+
+    <section class="chart-wrap">
+      <div id="status" class="status"></div>
+      <div id="summary" class="summary"></div>
+      <canvas id="chart"></canvas>
+      <p class="note" id="note"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Prices via yfinance (Yahoo Finance). For fun / educational use — not investment advice.</span>
+  </footer>
+
+  <script src="dividend.js?v=1"></script>
+</body>
+</html>

@@ -113,3 +113,45 @@ input:focus, select:focus { border-color: var(--accent-a); }
   padding: 16px;
   border-top: 1px solid var(--border);
 }
+
+/* Top navigation between pages */
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.nav a:hover { color: var(--text); }
+.nav a.active {
+  color: var(--text);
+  background: var(--panel);
+  border-color: var(--border);
+}
+
+/* Summary row on the inflation page */
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 4px 0 14px;
+  font-size: 15px;
+}
+.summary .stat { color: var(--muted); }
+.summary .stat b { color: var(--text); font-weight: 700; }
+.summary .verdict {
+  margin-left: auto;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.summary .verdict.good { color: #06122b; background: #5cffb0; }
+.summary .verdict.bad { color: #2b0606; background: #ff8a5c; }
